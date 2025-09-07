@@ -1,0 +1,61 @@
+{
+  "name": "copy-code-with-filename",
+  "displayName": " Copy Code with filename",
+  "description": "Copies file content with its relative path to the clipboard",
+  "version": "0.0.1",
+  "publisher": "yuchuan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/savageKarl/arklet-vscode-plugin.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:package.json"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "copy-code-with-path.copyCode",
+        "title": "Copy Code"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceScheme == 'file'",
+          "command": "copy-code-with-path.copyCode",
+          "group": "navigation@5"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^20.8.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "typescript": "^5.2.2"
+  },
+  "keywords": [
+    "typescript",
+    "tsx",
+    "vscode",
+    "extension"
+  ]
+}
