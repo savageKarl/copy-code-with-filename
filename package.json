@@ -2,7 +2,7 @@
   "name": "copy-code-with-filename",
   "displayName": " Copy Code with filename",
   "description": "Copies file content with its relative path to the clipboard",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "yuchuan",
   "license": "MIT",
   "repository": {
