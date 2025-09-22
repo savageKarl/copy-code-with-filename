@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if (doc) {
 					language = doc.languageId;
 				} else {
-					// 简单的从文件后缀名推断
+					// 简单的从文件后缀名推断 
 					const extension = path.extname(fileUri.fsPath).substring(1);
 					if (extension) {
 						language = extension;
@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 
 				// 4. 格式化最终要复制的字符串
-				const formattedContent = `File: ${relativePath}\n\n\`\`\`${language}\n${fileContent}\n\`\`\``;
+				const formattedContent = `File: ${relativePath}\n\n\`\`\`${language}\n${fileContent}\n\`\`\`\n`;
 
 				// 5. 将内容写入剪贴板
 				await vscode.env.clipboard.writeText(formattedContent);
