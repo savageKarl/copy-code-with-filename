@@ -55,7 +55,8 @@
 		"test": "node ./out/test/runTest.js",
 		"check": "pnpm exec biome check",
 		"format": "pnpm exec biome format --write",
-		"prepare": "simple-git-hooks"
+		"prepare": "simple-git-hooks",
+		"semantic-release": "semantic-release"
 	},
 	"simple-git-hooks": {
 		"pre-commit": "pnpm exec lint-staged",
