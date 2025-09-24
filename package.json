@@ -1,62 +1,81 @@
 {
-  "name": "copy-code-with-filename",
-  "displayName": " Copy Code with filename",
-  "description": "Copies file content with its relative path to the clipboard",
-  "version": "0.0.3",
-  "publisher": "yuchuan",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/savageKarl/arklet-vscode-plugin.git"
-  },
-  "engines": {
-    "vscode": "^1.80.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "workspaceContains:package.json"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "copy-code-with-path.copyCode",
-        "title": "Copy Code"
-      }
-    ],
-    "menus": {
-      "explorer/context": [
-        {
-          "when": "resourceScheme == 'file' && !explorerResourceIsFolder",
-          "command": "copy-code-with-path.copyCode",
-          "group": "navigation@5"
-        }
-      ]
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "pnpm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
-    "format": "pnpm exec biome format --write"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.80.0",
-    "@types/node": "^20.8.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "eslint": "^8.49.0",
-    "typescript": "^5.2.2"
-  },
-  "keywords": [
-    "typescript",
-    "tsx",
-    "vscode",
-    "extension"
-  ]
+	"name": "copy-code-with-filename",
+	"displayName": " Copy Code with filename",
+	"description": "Copies file content with its relative path to the clipboard",
+	"version": "0.1.0",
+	"publisher": "yuchuan",
+	"license": "MIT",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/savageKarl/arklet-vscode-plugin.git"
+	},
+	"engines": {
+		"vscode": "^1.80.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"workspaceContains:package.json"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "copy-code-with-path.copyCode",
+				"title": "Copy Code"
+			},
+			{
+				"command": "copy-code-with-path.copyFolderCode",
+				"title": "Copy Folder Code"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"when": "resourceScheme == 'file' && !explorerResourceIsFolder",
+					"command": "copy-code-with-path.copyCode",
+					"group": "navigation@5"
+				},
+				{
+					"when": "resourceScheme == 'file' && explorerResourceIsFolder",
+					"command": "copy-code-with-path.copyFolderCode",
+					"group": "navigation@5"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "pnpm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "pnpm run compile && pnpm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js",
+		"check": "pnpm exec biome check",
+		"format": "pnpm exec biome format --write",
+		"prepare": "simple-git-hooks"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "pnpm exec lint-staged",
+		"commit-msg": "pnpm exec commitlint --edit $1"
+	},
+	"lint-staged": {
+		"*": "pnpm exec biome check --write"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.4",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@semantic-release/changelog": "^6.0.3",
+		"@semantic-release/git": "^10.0.1",
+		"@types/node": "^20.8.0",
+		"@types/vscode": "^1.80.0",
+		"lint-staged": "^16.1.6",
+		"npm-run-all": "^4.1.5",
+		"semantic-release": "^24.2.9",
+		"simple-git-hooks": "^2.13.1",
+		"typescript": "^5.2.2"
+	}
 }
