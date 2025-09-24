@@ -56,5 +56,5 @@ jobs:
         run: pnpm run-p check
 
       - name: Build
-        run: pnpm build
+        run: pnpm compile
 
