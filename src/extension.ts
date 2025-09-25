@@ -3,7 +3,6 @@ import * as vscode from 'vscode'
 
 /**
  * 处理单个文件，返回其格式化的字符串内容。
- * 这个函数集中了处理单个文件的所有逻辑，方便复用。
  * @param fileUri 文件的 URI
  * @param workspaceFolder 当前工作区文件夹
  * @returns 格式化后的文件内容字符串
@@ -58,18 +57,41 @@ async function getAllFileUris(directoryUri: vscode.Uri): Promise<vscode.Uri[]> {
 export function activate(context: vscode.ExtensionContext) {
   const copyCodeCommand = vscode.commands.registerCommand(
     'copy-code-with-path.copyCode',
-    async (fileUri: vscode.Uri) => {
-      if (!fileUri) {
+    async (clickedUri: vscode.Uri, allSelectedUris?: vscode.Uri[]) => {
+      const urisToProcess = allSelectedUris && allSelectedUris.length > 0 ? allSelectedUris : [clickedUri]
+
+      if (!urisToProcess[0]) {
         vscode.window.showErrorMessage('无法获取文件路径，请从侧边栏文件管理器中使用。')
         return
       }
 
       try {
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUri)
-        const formattedContent = await getFormattedFileString(fileUri, workspaceFolder)
+        const fileUris: vscode.Uri[] = []
+        const stats = await Promise.all(urisToProcess.map((uri) => vscode.workspace.fs.stat(uri)))
+        stats.forEach((stat, index) => {
+          if (stat.type === vscode.FileType.File) {
+            fileUris.push(urisToProcess[index])
+          }
+        })
 
-        await vscode.env.clipboard.writeText(formattedContent)
-        vscode.window.showInformationMessage(`代码已复制: ${path.basename(fileUri.fsPath)}`)
+        if (fileUris.length === 0) {
+          vscode.window.showWarningMessage('所选内容中不包含任何文件。')
+          return
+        }
+
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUris[0])
+        const allFormattedContents = await Promise.all(
+          fileUris.map((uri) => getFormattedFileString(uri, workspaceFolder))
+        )
+
+        const finalContent = allFormattedContents.join('\n\n---\n\n')
+        await vscode.env.clipboard.writeText(finalContent)
+
+        if (fileUris.length > 1) {
+          vscode.window.showInformationMessage(`已复制 ${fileUris.length} 个文件的内容。`)
+        } else {
+          vscode.window.showInformationMessage(`代码已复制: ${path.basename(fileUris[0].fsPath)}`)
+        }
       } catch (error) {
         console.error(error)
         vscode.window.showErrorMessage('复制文件内容失败！')
