@@ -63,7 +63,10 @@
     "commit-msg": "pnpm exec commitlint --edit $1"
   },
   "lint-staged": {
-    "*.{js,ts,tsx,jsx}": "biome check --write"
+    "*.{js,ts,tsx,jsx,mjs,cjs}": "biome check --write",
+    "*.{json,graphql,grit}": "biome format --write",
+    "*.{css,scss}": "biome format --write",
+    "*.html": "biome format --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
