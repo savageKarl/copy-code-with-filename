@@ -52,7 +52,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm run semantic-release
 
+      # --- 新增的关键步骤 ---
+      - name: Rebuild node_modules for npm compatibility
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: pnpm install --frozen-lockfile --shamefully-hoist
+
       - name: Publish to Visual Studio Marketplace
+        if: steps.semantic.outputs.new_release_published == 'true'
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
@@ -61,7 +67,10 @@ jobs:
   sync-back-to-dev:
       runs-on: ubuntu-latest
       needs: release
-      if: github.ref == 'refs/heads/main' && needs.release.result == 'success'
+      # 同样，只有在 semantic-release 成功发布后才执行同步
+      if: github.ref == 'refs/heads/main' && needs.release.result == 'success' && fromJson(needs.release.outputs.semantic_new_release_published) == true
+      outputs:
+        semantic_new_release_published: ${{ needs.release.outputs.semantic_new_release_published }}
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
@@ -78,26 +87,21 @@ jobs:
           run: |
             echo "--- 正在同步 main 分支到 dev ---"
             
-            # 强制从远程拉取所有分支和标签的最新信息
             echo "1. 正在从远程拉取所有最新数据..."
             git fetch --all --tags
             
-            # (调试日志) 打印出 main 和 dev 分支最新的5条 commit，检查 release commit 是否可见
             echo "--- origin/main 最新日志 ---"
             git log origin/main -n 5 --pretty=oneline
             echo "--- origin/dev 最新日志 ---"
             git log origin/dev -n 5 --pretty=oneline
             
-            # 切换到 dev 分支并确保它是最新的
             echo "2. 正在切换到 dev 分支..."
             git checkout dev
             git pull origin dev
             
-            # 执行合并，--no-ff 确保总是生成一个 merge commit
             echo "3. 正在将 origin/main 合并到 dev..."
             git merge origin/main --no-ff -m "chore(sync): merge main back into dev after release [skip ci]"
             
-            # 将更新后的 dev 分支推送回远程仓库
             echo "4. 正在推送更新后的 dev 分支..."
             git push origin dev
             
