@@ -12,6 +12,9 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+    # 我们需要将 semantic-release 的输出传递给下一个 job
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
 
     steps:
       - name: Checkout code
@@ -27,7 +30,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.14.0
+          version: 10.14.0 # 您可以根据需要更新 pnpm 版本
 
       - name: Configure pnpm store path
         run: pnpm config set store-dir ~/.pnpm-store
@@ -46,13 +49,20 @@ jobs:
       - name: Run Lint & Format & Test Check
         run: pnpm run-p check 
 
+      # --- 关键修改：使用专门的 Action 来运行 semantic-release ---
       - name: Semantic Release
         id: semantic
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm run semantic-release
+
+      # --- 这个步骤现在可以正确地根据 semantic-release 的输出来判断是否执行 ---
+      - name: Rebuild node_modules for npm compatibility
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: pnpm install --frozen-lockfile --shamefully-hoist
 
       - name: Publish to Visual Studio Marketplace
+        if: steps.semantic.outputs.new_release_published == 'true'
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
@@ -61,12 +71,13 @@ jobs:
   sync-back-to-dev:
       runs-on: ubuntu-latest
       needs: release
-      if: github.ref == 'refs/heads/main' && needs.release.result == 'success'
+      # 只有在 release job 成功，并且确实发布了新版本时才执行
+      if: needs.release.result == 'success' && needs.release.outputs.new_release_published == 'true'
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
           with:
-            token: ${{ secrets.PAT_FOR_ACTIONS }}
+            token: ${{ secrets.PAT_FOR_ACTIONS }} # 确保这个 PAT 有权限推送 dev 分支
             fetch-depth: 0
 
         - name: Configure Git
@@ -77,28 +88,17 @@ jobs:
         - name: Sync main back to dev
           run: |
             echo "--- 正在同步 main 分支到 dev ---"
-            
-            # 强制从远程拉取所有分支和标签的最新信息
-            echo "1. 正在从远程拉取所有最新数据..."
             git fetch --all --tags
             
-            # (调试日志) 打印出 main 和 dev 分支最新的5条 commit，检查 release commit 是否可见
             echo "--- origin/main 最新日志 ---"
             git log origin/main -n 5 --pretty=oneline
             echo "--- origin/dev 最新日志 ---"
             git log origin/dev -n 5 --pretty=oneline
             
-            # 切换到 dev 分支并确保它是最新的
-            echo "2. 正在切换到 dev 分支..."
             git checkout dev
             git pull origin dev
             
-            # 执行合并，--no-ff 确保总是生成一个 merge commit
-            echo "3. 正在将 origin/main 合并到 dev..."
             git merge origin/main --no-ff -m "chore(sync): merge main back into dev after release [skip ci]"
             
-            # 将更新后的 dev 分支推送回远程仓库
-            echo "4. 正在推送更新后的 dev 分支..."
             git push origin dev
-            
             echo "--- 同步完成 ---"
