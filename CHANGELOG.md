@@ -1,3 +1,16 @@
+# [0.3.0](https://github.com/savageKarl/copy-code-with-filename/compare/v0.2.0...v0.3.0) (2025-11-26)
+
+
+### Bug Fixes
+
+* release.yaml ([b042134](https://github.com/savageKarl/copy-code-with-filename/commit/b04213496ab98ccd722942b9cd2d1e554705cef1))
+
+
+### Features
+
+* fitler some path ([f3a30c3](https://github.com/savageKarl/copy-code-with-filename/commit/f3a30c34a3ca8bdb01e1db5d5f6dc6a41a646b83))
+* support copy multiple file code ([13b7e90](https://github.com/savageKarl/copy-code-with-filename/commit/13b7e90ae9048cfdc2b072f7278f0ab117e2381c))
+
 # [0.2.0](https://github.com/savageKarl/copy-code-with-filename/compare/v0.1.1...v0.2.0) (2025-09-25)
 
 
