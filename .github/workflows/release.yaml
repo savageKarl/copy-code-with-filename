@@ -33,9 +33,12 @@ jobs:
       - name: Quality Check
         run: pnpm run check
 
-      # 显式执行打包，生成 .vsix 文件
+      - name: Run Tests
+        run: xvfb-run -a pnpm run test
+
       - name: Package Extension
-        run: npx @vscode/vsce package
+        # 使用 --no-dependencies 跳过 npm list 检查，因为我们已经通过 esbuild 打包了所有依赖
+        run: pnpm exec vsce package --no-dependencies
 
       - name: Publish to VS Code Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
