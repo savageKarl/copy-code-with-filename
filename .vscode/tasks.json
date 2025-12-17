@@ -2,16 +2,14 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "build", // 任务标签，方便识别
       "type": "npm",
-      "script": "watch",
-      "problemMatcher": "$tsc-watch",
-      "isBackground": true,
-      "presentation": {
-        "reveal": "never"
-      },
+      "script": "build", // 运行 pnpm run build
+      "problemMatcher": [],
+      "isBackground": false, // 这不是后台任务，它会运行并结束
       "group": {
         "kind": "build",
-        "isDefault": true
+        "isDefault": true // 标记为默认构建任务
       }
     }
   ]

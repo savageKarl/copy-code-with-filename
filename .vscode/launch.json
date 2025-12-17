@@ -2,11 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "运行扩展",
+      "name": "Run Extension", // 名字可以自定义
       "type": "extensionHost",
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      // 关键：将 outFiles 指向 esbuild 的输出目录 dist
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      // 关键：运行上面 tasks.json 中定义的默认构建任务
       "preLaunchTask": "${defaultBuildTask}"
     }
   ]

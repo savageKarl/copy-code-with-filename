@@ -5,7 +5,6 @@
   "version": "0.0.1",
   "publisher": "yuchuan",
   "license": "MIT",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/savageKarl/copy-code-with-filename.git"

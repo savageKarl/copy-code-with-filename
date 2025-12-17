@@ -1,5 +1,6 @@
-import process from 'node:process'
-import esbuild from 'esbuild'
+// 使用 CommonJS 的 require 语法
+const process = require('node:process')
+const esbuild = require('esbuild')
 
 const production = process.argv.includes('--production')
 const watch = process.argv.includes('--watch')
@@ -29,7 +30,7 @@ async function main() {
   const ctx = await esbuild.context({
     entryPoints: ['src/extension.ts'],
     bundle: true,
-    format: 'cjs', // 输出依然保持 CommonJS，因为 VS Code 插件宿主对 CJS 支持最稳健
+    format: 'cjs', // 输出依然保持 CommonJS
     minify: production,
     sourcemap: !production,
     sourcesContent: false,
