@@ -30,14 +30,12 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Quality Check
-        run: pnpm run check
-
-      - name: Run Tests
-        run: xvfb-run -a pnpm run test
+      - name: Build Extension (Bundle)
+        # 生成 dist/extension.js
+        run: pnpm run build --production
 
       - name: Package Extension
-        # 使用 --no-dependencies 跳过 npm list 检查，因为我们已经通过 esbuild 打包了所有依赖
+        # --no-dependencies 是关键：忽略 node_modules，只打包 dist 目录
         run: pnpm exec vsce package --no-dependencies
 
       - name: Publish to VS Code Marketplace

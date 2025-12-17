@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - dev
+  push:
+    branches:
+      - main
+      - dev
 
 jobs:
   ci:
@@ -31,8 +35,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Checks
-        run: pnpm run check
+      - name: Type Check & Lint
+        run: |
+          pnpm run compile
+          pnpm run check
 
-      - name: Run Build
-        run: pnpm run compile
+      # 如果有测试用例，可以在这里开启
+      # - name: Run Headless Test
+      #   run: xvfb-run -a pnpm run test

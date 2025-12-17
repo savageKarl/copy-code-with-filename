@@ -1,9 +1,10 @@
 .vscode/**
 .vscode-test/**
 src/**
+out/**
 .gitignore
 .yarnrc
-vsc-extension-quickstart.md
+.editorconfig
 .changeset/**
 .github/**
 .husky/**
@@ -12,8 +13,9 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 webpack.config.js
-**/*.map
-**/*.ts
+esbuild.config.js
 tsconfig.json
 .eslintrc.json
 .eslintignore
+biome.json
+lint-staged.config.js
