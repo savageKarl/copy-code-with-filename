@@ -31,22 +31,30 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Extension (Bundle)
-        # 生成 dist/extension.js
         run: pnpm run build --production
 
       - name: Package Extension
-        # --no-dependencies 是关键：忽略 node_modules，只打包 dist 目录
+        # 生成 .vsix 文件
         run: pnpm exec vsce package --no-dependencies
+
+      - name: Get VSIX Path
+        id: vsix_path
+        run: |
+          # 找到当前目录下以 .vsix 结尾的文件
+          VSIX_FILE=$(find . -maxdepth 1 -name "*.vsix" | head -n 1)
+          echo "Found VSIX file: $VSIX_FILE"
+          # 将路径写入 GitHub Output 供后续步骤使用
+          echo "path=$VSIX_FILE" >> $GITHUB_OUTPUT
 
       - name: Publish to VS Code Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
-          extensionFile: '*.vsix'
+          extensionFile: ${{ steps.vsix_path.outputs.path }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: '*.vsix'
+          files: ${{ steps.vsix_path.outputs.path }}
