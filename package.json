@@ -2,7 +2,7 @@
   "name": "block-clip",
   "displayName": "blockClip",
   "description": "Copies file content with its relative path to the clipboard",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "yuchuan",
   "license": "MIT",
   "repository": {
